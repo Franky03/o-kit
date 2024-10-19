@@ -5,12 +5,13 @@
 #include "Data.h"
 
 class Solucao {
+    public:
     std::vector<int> route;
     double costSolution = 0;
 };
 
 void printRoute(const Solucao *solucao);
-void calculateCost(Solucao *solucao, const Data *data);
-Solucao *constructSolution(Solucao *solucao, const Data *data);
+void calculateCost(Solucao *solucao, Data *data);
+Solucao *generateRandomSolution(Solucao *solucao);
 
 #endif
