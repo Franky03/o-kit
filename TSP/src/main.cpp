@@ -1,28 +1,66 @@
 #include "Data.h"
+#include "Solucao.h"
+#include "Construcao.h"
+#include "LocalSearch.h"
 #include <iostream>
+#include <climits>
 
 using namespace std;
+
+Solucao* finalSolution;
+
+Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha){
+    Solucao *bestSolution = new Solucao;
+    bestSolution->costSolution = INT_MAX;
+
+    for(int i = 0; i<maxIter; i++){
+        Solucao *newSolution = construction(solucao, data, alpha);
+        LocalSearch(newSolution, data);
+
+        Solucao *localBest = new Solucao;
+        *localBest = *newSolution;
+
+        int iterILS = 0;
+        while(iterILS < maxIterILS){
+            newSolution = DoubleBridge(localBest, data);
+            LocalSearch(newSolution, data);
+
+            if(newSolution->costSolution < localBest->costSolution){
+                delete localBest;
+                localBest = newSolution;
+            }
+
+            iterILS++;
+            delete newSolution;
+        }
+
+        if(localBest->costSolution < bestSolution->costSolution){
+            *bestSolution = *localBest;
+        }
+
+        delete localBest;
+        delete newSolution;
+    }
+
+    return bestSolution;
+}
 
 int main(int argc, char** argv) {
 
     auto data = Data(argc, argv[1]);
+    double alpha = argv[2] ? atof(argv[2]) : 0.5;
     data.read();
     size_t n = data.getDimension();
 
-    cout << "Dimension: " << n << endl;
-    cout << "DistanceMatrix: " << endl;
-    data.printMatrixDist();
-
-
-    cout << "Exemplo de Solucao s = ";
-    double cost = 0.0;
-    for (size_t i = 1; i < n; i++) {
-        cout << i << " -> ";
-        cost += data.getDistance(i, i+1);
+    Solucao solucao;
+    for(int i = 1; i <= n; i++){
+        solucao.route.push_back(i);
     }
-    cost += data.getDistance(n, 1);
-    cout << n << " -> " << 1 << endl;
-    cout << "Custo de S: " << cost << endl;
+    solucao.route.push_back(1);
+
+    finalSolution = ILS(&solucao, &data, 20, 50, alpha);
+    printRoute(finalSolution);
+    cout << "Custo da Solucao Construida: " << finalSolution->costSolution << endl;
 
     return 0;
 }

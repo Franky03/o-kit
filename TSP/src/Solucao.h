@@ -4,14 +4,17 @@
 #include <vector>
 #include "Data.h"
 
-class Solucao {
+typedef struct {
     public:
     std::vector<int> route;
     double costSolution = 0;
-};
+} Solucao;
 
 void printRoute(const Solucao *solucao);
 void calculateCost(Solucao *solucao, Data *data);
 Solucao *generateRandomSolution(Solucao *solucao);
+Solucao *getRemainingNodes(Solucao *solucao, Solucao* generatedSolution);
+Solucao *DoubleBridge(Solucao *solucao, Data *data);
+;
 
 #endif
