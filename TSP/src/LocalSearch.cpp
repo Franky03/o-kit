@@ -184,7 +184,7 @@ bool bestImprovementOrOpt(Solucao *solucao, Data *data, int k){
 void LocalSearch(Solucao *solucao, Data *data){
     std::vector<int> methods = {0, 1, 2, 3, 4, 5};
     bool improved = false;
-
+    
     while(!methods.empty()){
         int n = rand() % methods.size();
         switch(methods[n]){

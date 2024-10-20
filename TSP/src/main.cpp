@@ -16,7 +16,6 @@ Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double a
     for(int i = 0; i<maxIter; i++){
         Solucao *newSolution = construction(solucao, data, alpha);
         LocalSearch(newSolution, data);
-
         Solucao *localBest = new Solucao;
         *localBest = *newSolution;
 
@@ -31,11 +30,12 @@ Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double a
             }
 
             iterILS++;
-            delete newSolution;
+
         }
 
         if(localBest->costSolution < bestSolution->costSolution){
             *bestSolution = *localBest;
+            std::cout << "Iteracao: " << i << " Custo: " << bestSolution->costSolution << std::endl;
         }
 
         delete localBest;
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     }
     solucao.route.push_back(1);
 
-    finalSolution = ILS(&solucao, &data, 20, 50, alpha);
+    finalSolution = ILS(&solucao, &data, 50, n > 150 ? n/2 : n, alpha);
     printRoute(finalSolution);
     cout << "Custo da Solucao Construida: " << finalSolution->costSolution << endl;
 

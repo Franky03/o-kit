@@ -48,28 +48,47 @@ Solucao *getRemainingNodes(Solucao *solucao, Solucao* generatedSolution){
 }
 
 Solucao *DoubleBridge(Solucao *solucao, Data *data){
-
-    int n = solucao->route.size();
-    int pos1 = 1 + (rand() % (n/4));
-    int pos2 = pos1 + 1 + (rand() % (n/4));
-    int pos3 = pos2 + 1 + (rand() % (n/4));
-
     Solucao *newSolution = new Solucao;
-    newSolution->route.reserve(n);
+    *newSolution = *solucao;
+
+    std::vector<int> first_block, second_block;
+    int b1_size, b2_size;
+
+    b1_size = (rand() % (newSolution->route.size()/10)) + 2;
+    b2_size = (rand() % (newSolution->route.size()/10)) + 2;
+
+    first_block.reserve(b1_size);
+    second_block.reserve(b2_size);
 
 
-    auto itBegin = solucao->route.begin();
-    auto itPos1 = solucao->route.begin() + pos1;
-    auto itPos2 = solucao->route.begin() + pos2;
-    auto itPos3 = solucao->route.begin() + pos3;
+    int pb1 = (rand() % (newSolution->route.size() - (b1_size+1))) + 1;
+    int pb2 = (rand() % (newSolution->route.size() - (b2_size+1))) + 1;
 
-    newSolution->route.insert(newSolution->route.end(), itBegin, itPos1); // A
-    newSolution->route.insert(newSolution->route.end(), itPos2, itPos3); // C
-    newSolution->route.insert(newSolution->route.end(), itPos1, itPos2); // B
-    newSolution->route.insert(newSolution->route.end(), itPos3, solucao->route.end()); // D
+    while(pb2 < pb1 + b1_size && pb1 < pb2 + b2_size){
+        pb2 = (rand() % (newSolution->route.size() - (b2_size+1))) + 1;
+    }
 
-    solucao->route = std::move(newSolution->route);
-    calculateCost(solucao, data);
+    for(int i = 0; i < b1_size; i++){
+        first_block.push_back(newSolution->route[pb1 + i]);
+    }
 
-    return solucao;
+    for(int i = 0; i < b2_size; i++){
+        second_block.push_back(newSolution->route[pb2 + i]);
+    }
+   
+    if(pb1 > pb2){
+        newSolution->route.erase(newSolution->route.begin() + pb1, newSolution->route.begin() + pb1 + b1_size);
+        newSolution->route.insert(newSolution->route.begin() + pb1, second_block.begin(), second_block.end());
+        newSolution->route.erase(newSolution->route.begin() + pb2, newSolution->route.begin() + pb2 + b2_size);
+        newSolution->route.insert(newSolution->route.begin() + pb2, first_block.begin(), first_block.end());
+        
+    }else{
+        newSolution->route.erase(newSolution->route.begin() + pb2, newSolution->route.begin() + pb2 + b2_size);
+        newSolution->route.insert(newSolution->route.begin() + pb2, first_block.begin(), first_block.end());
+        newSolution->route.erase(newSolution->route.begin() + pb1, newSolution->route.begin() + pb1 + b1_size);
+        newSolution->route.insert(newSolution->route.begin() + pb1, second_block.begin(), second_block.end());
+    }
+    
+    calculateCost(newSolution, data);
+    return newSolution;
 }

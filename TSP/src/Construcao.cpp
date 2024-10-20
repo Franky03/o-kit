@@ -52,9 +52,8 @@ Solucao* construction(Solucao* solucao, Data* data, double alpha){
         insertInSolution(sol, remainingNodes, &insertionCost[q]);
     }
 
-    std::cout << "Solucao Construida: ";
-
     calculateCost(sol, data);
+    
     delete remainingNodes;
     return sol;
 }
