@@ -25,21 +25,16 @@ Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double a
             LocalSearch(newSolution, data);
 
             if(newSolution->costSolution < localBest->costSolution){
-                delete localBest;
                 localBest = newSolution;
             }
 
             iterILS++;
-
         }
 
         if(localBest->costSolution < bestSolution->costSolution){
             *bestSolution = *localBest;
             std::cout << "Iteracao: " << i << " Custo: " << bestSolution->costSolution << std::endl;
         }
-
-        delete localBest;
-        delete newSolution;
     }
 
     return bestSolution;

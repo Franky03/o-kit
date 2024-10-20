@@ -56,43 +56,7 @@ bool bestImprovementSwap(Solucao *solucao, Data *data){
 }
 
 bool bestImprovementReinsert(Solucao *solucao, Data *data){
-    double bestDelta = 0;
-    int best_i = -1, best_j = -1;
-
-    for(int i = 1; i < solucao->route.size() -1; ++i){
-        int a = solucao->route[i];
-        int a_prev = solucao->route[i-1];
-        int a_next = solucao->route[i+1];
-        for(int j = 1; j < solucao->route.size() - 1; ++j){
-            if(i == j || i == j-1 || i == j+1) continue;
-            int b = solucao->route[j];
-            int b_next = solucao->route[j+1];
-
-            double delta;
-            // remove a distancia entre a e a_prev e a e a_next
-            delta = -data->getDistance(a, a_prev) - data->getDistance(a, a_next);
-            // adiciona a distancia entre a_prev e a_next
-            delta += data->getDistance(a_prev, a_next);
-            // remove a distancia entre b e b_next
-            delta -= data->getDistance(b, b_next);
-            // adiciona a distancia entre b e a e a e b_next
-            delta += data->getDistance(b, a) + data->getDistance(a, b_next);
-           
-            if(delta < bestDelta){
-                bestDelta = delta;
-                best_i = i;
-                best_j = j;
-            }
-        } 
-    }
-
-    if (bestDelta < 0){
-        solucao->route.insert(solucao->route.begin() + best_j, solucao->route[best_i]);
-        solucao->route.erase(solucao->route.begin() + best_i);
-        solucao->costSolution += bestDelta;
-        return true;
-    }
-    return false;
+    return bestImprovementOrOpt(solucao, data, 1);
 }
 
 bool bestImprovement2Opt(Solucao *solucao, Data *data){
@@ -182,7 +146,7 @@ bool bestImprovementOrOpt(Solucao *solucao, Data *data, int k){
 }
 
 void LocalSearch(Solucao *solucao, Data *data){
-    std::vector<int> methods = {0, 1, 2, 3, 4, 5};
+    std::vector<int> methods = {0, 1, 2, 3, 4};
     bool improved = false;
     
     while(!methods.empty()){
@@ -197,13 +161,16 @@ void LocalSearch(Solucao *solucao, Data *data){
             case 2:
                 improved = bestImprovement2Opt(solucao, data);
                 break;
-            default:
-                improved = bestImprovementOrOpt(solucao, data, methods[n-2]);
+            case 3:
+                improved = bestImprovementOrOpt(solucao, data, 2);
+                break;
+            case 4:
+                improved = bestImprovementOrOpt(solucao, data, 3);
                 break;
         }
 
         if(improved){
-            methods = {0, 1, 2, 3, 4, 5};
+            methods = {0, 1, 2, 3, 4};
         }else{
             methods.erase(methods.begin() + n);
         }
