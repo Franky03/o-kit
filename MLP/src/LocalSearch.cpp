@@ -122,7 +122,6 @@ bool bestImprovementOrOpt(Solucao *solucao, Data *data, vector<vector<Subsequenc
 void LocalSearch(Solucao *solucao, Data *data, vector<vector<Subsequence>> &subseq_matrix){
     std::vector<int> methods = {0, 1, 2, 3, 4};
     bool improved = false;
-    int count = 0;
 
     while(!methods.empty()){
         int n = rand() % methods.size();
@@ -146,10 +145,8 @@ void LocalSearch(Solucao *solucao, Data *data, vector<vector<Subsequence>> &subs
 
         if(improved){
             methods = {0, 1, 2, 3, 4};
-            count++;    
         }else{
             methods.erase(methods.begin() + n);
         }
     }
-
 }

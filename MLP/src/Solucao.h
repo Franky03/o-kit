@@ -29,7 +29,7 @@ typedef struct Subsequence{
 
 void UpdateAllSubsequences(Solucao *s, vector<vector<Subsequence>> & subseq_matrix, Data *data);
 void UpdateNeighborSubsequences(Solucao *s, vector<vector<Subsequence>> & subseq_matrix, Data *data, int begin, int end);
-Solucao *DoubleBridge(Solucao *solucao, Data *data);
+Solucao DoubleBridge(Solucao &solucao, Data *data);
 
 void printSequence(const Solucao *solucao);
 

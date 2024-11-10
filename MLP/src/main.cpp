@@ -8,37 +8,32 @@
 
 using namespace std;
 
-Solucao* finalSolution;
-
-Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha,  vector<vector<Subsequence>> &subseq_matrix){
-    Solucao *bestSolution = new Solucao;
-    bestSolution->latency = INFINITY;
+Solucao ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha,  vector<vector<Subsequence>> &subseq_matrix){
+    Solucao bestSolution;
+    bestSolution.latency = INFINITY;
 
     for(int i = 0; i<maxIter; i++){
-        Solucao *newSolution = construction(solucao, data, alpha);
-        UpdateAllSubsequences(newSolution, subseq_matrix, data);
+        Solucao newSolution = construction(solucao, data, alpha);
+        UpdateAllSubsequences(&newSolution, subseq_matrix, data);
+        LocalSearch(&newSolution, data, subseq_matrix);
         
-        LocalSearch(newSolution, data, subseq_matrix);
-        
-        Solucao *localBest = newSolution;
+        Solucao localBest = newSolution;
 
         int iterILS = 0;
         while(iterILS < maxIterILS){
             newSolution = DoubleBridge(localBest , data);
-            UpdateAllSubsequences(newSolution, subseq_matrix, data);
-            LocalSearch(newSolution, data, subseq_matrix);
-
-            if(newSolution->latency < localBest->latency){
+            UpdateAllSubsequences(&newSolution, subseq_matrix, data);
+            LocalSearch(&newSolution, data, subseq_matrix);
+            
+            if(newSolution.latency + 1e-6 < localBest.latency){
                 localBest = newSolution;
                 iterILS = 0;
-
-                std::cout << "Iteracao: " << i << " Custo: " << localBest->latency << std::endl;
             }
 
             iterILS++;
         }
 
-        if(localBest->latency < bestSolution->latency){
+        if(localBest.latency < bestSolution.latency){
             bestSolution = localBest;
         }
     }
@@ -72,16 +67,16 @@ int main(int argc, char** argv) {
         solucao.sequence.push_back(1);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Solucao* finalSolution = ILS(&solucao, &data, 10, n < 100 ? n : 100, alpha, subseq_matrix);
+        Solucao finalSolution = ILS(&solucao, &data, 10, n < 100 ? n : 100, alpha, subseq_matrix);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
         double timeTaken = duration.count();
         
-        sumCost += finalSolution->latency;
+        sumCost += finalSolution.latency;
         sumTime += timeTaken;
 
-        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution->latency << " - Tempo: " << timeTaken << " segundos" << std::endl;
+        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution.latency << " - Tempo: " << timeTaken << " segundos" << std::endl;
     }
 
     // Cálculo das estatísticas

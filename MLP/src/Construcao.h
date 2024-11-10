@@ -12,6 +12,6 @@ typedef struct {
     double cost; // delta ao inserir k na aresta {i,j}
 } Insercao; 
 
-Solucao* construction(Solucao* solucao, Data* data, double alpha);
+Solucao construction(Solucao* solucao, Data* data, double alpha);
 
 #endif

@@ -74,45 +74,45 @@ void UpdateNeighborSubsequences(Solucao *s, vector<vector<Subsequence>> & subseq
     s->latency = subseq_matrix[0][data->getDimension()].C;
 }
 
-Solucao *DoubleBridge(Solucao *solucao, Data *data){
-    Solucao *newSolution = solucao;
+Solucao DoubleBridge(Solucao &solucao, Data *data){
+    Solucao newSolution = solucao;
 
     std::vector<int> first_block, second_block;
     int b1_size, b2_size;
 
-    b1_size = (rand() % (newSolution->sequence.size()/10)) + 2;
-    b2_size = (rand() % (newSolution->sequence.size()/10)) + 2;
+    b1_size = (rand() % (newSolution.sequence.size()/10)) + 2;
+    b2_size = (rand() % (newSolution.sequence.size()/10)) + 2;
 
     first_block.reserve(b1_size);
     second_block.reserve(b2_size);
 
 
-    int pb1 = (rand() % (newSolution->sequence.size() - (b1_size+1))) + 1;
-    int pb2 = (rand() % (newSolution->sequence.size() - (b2_size+1))) + 1;
+    int pb1 = (rand() % (newSolution.sequence.size() - (b1_size+1))) + 1;
+    int pb2 = (rand() % (newSolution.sequence.size() - (b2_size+1))) + 1;
 
     while(pb2 < pb1 + b1_size && pb1 < pb2 + b2_size){
-        pb2 = (rand() % (newSolution->sequence.size() - (b2_size+1))) + 1;
+        pb2 = (rand() % (newSolution.sequence.size() - (b2_size+1))) + 1;
     }
 
     for(int i = 0; i < b1_size; i++){
-        first_block.push_back(newSolution->sequence[pb1 + i]);
+        first_block.push_back(newSolution.sequence[pb1 + i]);
     }
 
     for(int i = 0; i < b2_size; i++){
-        second_block.push_back(newSolution->sequence[pb2 + i]);
+        second_block.push_back(newSolution.sequence[pb2 + i]);
     }
    
     if(pb1 > pb2){
-        newSolution->sequence.erase(newSolution->sequence.begin() + pb1, newSolution->sequence.begin() + pb1 + b1_size);
-        newSolution->sequence.insert(newSolution->sequence.begin() + pb1, second_block.begin(), second_block.end());
-        newSolution->sequence.erase(newSolution->sequence.begin() + pb2, newSolution->sequence.begin() + pb2 + b2_size);
-        newSolution->sequence.insert(newSolution->sequence.begin() + pb2, first_block.begin(), first_block.end());
+        newSolution.sequence.erase(newSolution.sequence.begin() + pb1, newSolution.sequence.begin() + pb1 + b1_size);
+        newSolution.sequence.insert(newSolution.sequence.begin() + pb1, second_block.begin(), second_block.end());
+        newSolution.sequence.erase(newSolution.sequence.begin() + pb2, newSolution.sequence.begin() + pb2 + b2_size);
+        newSolution.sequence.insert(newSolution.sequence.begin() + pb2, first_block.begin(), first_block.end());
         
     }else{
-        newSolution->sequence.erase(newSolution->sequence.begin() + pb2, newSolution->sequence.begin() + pb2 + b2_size);
-        newSolution->sequence.insert(newSolution->sequence.begin() + pb2, first_block.begin(), first_block.end());
-        newSolution->sequence.erase(newSolution->sequence.begin() + pb1, newSolution->sequence.begin() + pb1 + b1_size);
-        newSolution->sequence.insert(newSolution->sequence.begin() + pb1, second_block.begin(), second_block.end());
+        newSolution.sequence.erase(newSolution.sequence.begin() + pb2, newSolution.sequence.begin() + pb2 + b2_size);
+        newSolution.sequence.insert(newSolution.sequence.begin() + pb2, first_block.begin(), first_block.end());
+        newSolution.sequence.erase(newSolution.sequence.begin() + pb1, newSolution.sequence.begin() + pb1 + b1_size);
+        newSolution.sequence.insert(newSolution.sequence.begin() + pb1, second_block.begin(), second_block.end());
     }
     
     return newSolution;
