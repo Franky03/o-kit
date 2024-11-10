@@ -76,19 +76,16 @@ int main(int argc, char** argv) {
         sumCost += finalSolution.latency;
         sumTime += timeTaken;
 
-        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution.latency << " - Tempo: " << timeTaken << " segundos" << std::endl;
     }
 
     // Cálculo das estatísticas
     double meanCost = sumCost / 10;
     double meanTime = sumTime / 10;
 
-    // nome do arquivo: benchmarks/benchmark_<instancia>.txt
-    std::string filename = "./benchmarks/benchmark_" + std::string(argv[1]) + ".txt";
-    std::ofstream outFile(filename);
-    outFile << "Instância;Alpha;Custo Médio;Tempo Médio" << std::endl;
-    outFile << argv[1] << ";" << alpha << ";" << meanCost << ";" << meanTime << std::endl;
-    outFile.close();
+    // format: instance_name mean_time mean_cost 
+
+    std::cout << data.getInstanceName();
+    printf(";%.2lf;%.2lf\n", meanTime, meanCost);
 
 
     return 0;
