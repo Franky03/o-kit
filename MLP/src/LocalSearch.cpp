@@ -3,7 +3,7 @@
 #include <utility>
 #include <algorithm>
 
-bool bestImprovementSwap(Solucao *solucao, Data *data,vector<vector<Subsequence>> subseq_matrix){
+bool bestImprovementSwap(Solucao *solucao, Data *data,vector<vector<Subsequence>> &subseq_matrix){
     int best_i = -1, best_j = -1;
     int size = solucao->sequence.size();
     double bestLatency = solucao->latency;
@@ -41,7 +41,7 @@ bool bestImprovementSwap(Solucao *solucao, Data *data,vector<vector<Subsequence>
     return false;
 }
 
-bool bestImprovement2Opt(Solucao *solucao, Data *data, vector<vector<Subsequence>> subseq_matrix){
+bool bestImprovement2Opt(Solucao *solucao, Data *data, vector<vector<Subsequence>> &subseq_matrix){
     double bestLatency = solucao->latency;
     int best_i = -1, best_j = -1;
     int n = solucao->sequence.size();
@@ -72,7 +72,7 @@ bool bestImprovement2Opt(Solucao *solucao, Data *data, vector<vector<Subsequence
     return false;
 }
 
-bool bestImprovementOrOpt(Solucao *solucao, Data *data, vector<vector<Subsequence>> subseq_matrix, int k){
+bool bestImprovementOrOpt(Solucao *solucao, Data *data, vector<vector<Subsequence>> &subseq_matrix, int k){
     double bestLatency = solucao->latency;
     int best_i = -1, best_j = -1;
     int n = solucao->sequence.size();
@@ -119,7 +119,7 @@ bool bestImprovementOrOpt(Solucao *solucao, Data *data, vector<vector<Subsequenc
     return false;
 }
 
-void LocalSearch(Solucao *solucao, Data *data, vector<vector<Subsequence>> subseq_matrix){
+void LocalSearch(Solucao *solucao, Data *data, vector<vector<Subsequence>> &subseq_matrix){
     std::vector<int> methods = {0, 1, 2, 3, 4};
     bool improved = false;
     int count = 0;
@@ -151,7 +151,5 @@ void LocalSearch(Solucao *solucao, Data *data, vector<vector<Subsequence>> subse
             methods.erase(methods.begin() + n);
         }
     }
-
-    std::cout << "Melhorou: " << count << std::endl;
 
 }

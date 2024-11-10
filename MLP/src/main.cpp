@@ -10,14 +10,14 @@ using namespace std;
 
 Solucao* finalSolution;
 
-Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha){
+Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha,  vector<vector<Subsequence>> &subseq_matrix){
     Solucao *bestSolution = new Solucao;
-    bestSolution->latency = INT_MAX;
-    vector<vector<Subsequence>> subseq_matrix(data->getDimension() + 1, vector<Subsequence>(data->getDimension() + 1));
+    bestSolution->latency = INFINITY;
 
     for(int i = 0; i<maxIter; i++){
         Solucao *newSolution = construction(solucao, data, alpha);
         UpdateAllSubsequences(newSolution, subseq_matrix, data);
+        
         LocalSearch(newSolution, data, subseq_matrix);
         
         Solucao *localBest = newSolution;
@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
     data.read();
     size_t n = data.getDimension();
 
+    vector<vector<Subsequence>> subseq_matrix(n + 1, vector<Subsequence>(n + 1));
+
     double sumCost = 0;
     double sumTime = 0;
     
@@ -70,7 +72,7 @@ int main(int argc, char** argv) {
         solucao.sequence.push_back(1);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Solucao* finalSolution = ILS(&solucao, &data, 10, n < 100 ? n : 100, alpha);
+        Solucao* finalSolution = ILS(&solucao, &data, 10, n < 100 ? n : 100, alpha, subseq_matrix);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
