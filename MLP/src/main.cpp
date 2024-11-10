@@ -12,30 +12,34 @@ Solucao* finalSolution;
 
 Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double alpha){
     Solucao *bestSolution = new Solucao;
-    bestSolution->costSolution = INT_MAX;
+    bestSolution->latency = INT_MAX;
+    vector<vector<Subsequence>> subseq_matrix(data->getDimension() + 1, vector<Subsequence>(data->getDimension() + 1));
 
     for(int i = 0; i<maxIter; i++){
         Solucao *newSolution = construction(solucao, data, alpha);
-        LocalSearch(newSolution, data);
-        Solucao *localBest = new Solucao;
-        *localBest = *newSolution;
+        UpdateAllSubsequences(newSolution, subseq_matrix, data);
+        LocalSearch(newSolution, data, subseq_matrix);
+        
+        Solucao *localBest = newSolution;
 
         int iterILS = 0;
         while(iterILS < maxIterILS){
-            newSolution = DoubleBridge(localBest, data);
-            LocalSearch(newSolution, data);
+            newSolution = DoubleBridge(localBest , data);
+            UpdateAllSubsequences(newSolution, subseq_matrix, data);
+            LocalSearch(newSolution, data, subseq_matrix);
 
-            if(newSolution->costSolution < localBest->costSolution){
+            if(newSolution->latency < localBest->latency){
                 localBest = newSolution;
                 iterILS = 0;
+
+                std::cout << "Iteracao: " << i << " Custo: " << localBest->latency << std::endl;
             }
 
             iterILS++;
         }
 
-        if(localBest->costSolution < bestSolution->costSolution){
-            *bestSolution = *localBest;
-            std::cout << "Iteracao: " << i << " Custo: " << bestSolution->costSolution << std::endl;
+        if(localBest->latency < bestSolution->latency){
+            bestSolution = localBest;
         }
     }
 
@@ -55,33 +59,32 @@ int main(int argc, char** argv) {
     data.read();
     size_t n = data.getDimension();
 
-    std::vector<double> costs;
-    std::vector<double> times;
+    double sumCost = 0;
+    double sumTime = 0;
     
     for (int i = 0; i < 10; i++) {
         Solucao solucao;
         for (int j = 1; j <= n; j++) {
-            solucao.route.push_back(j);
+            solucao.sequence.push_back(j);
         }
-        solucao.route.push_back(1);
+        solucao.sequence.push_back(1);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Solucao* finalSolution = ILS(&solucao, &data, 50, n > 150 ? n / 2 : n, alpha);
+        Solucao* finalSolution = ILS(&solucao, &data, 10, n < 100 ? n : 100, alpha);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
         double timeTaken = duration.count();
         
-        costs.push_back(finalSolution->costSolution);
-        times.push_back(timeTaken);
+        sumCost += finalSolution->latency;
+        sumTime += timeTaken;
 
-        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution->costSolution 
-                  << " - Tempo: " << timeTaken << " segundos" << std::endl;
+        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution->latency << " - Tempo: " << timeTaken << " segundos" << std::endl;
     }
 
     // Cálculo das estatísticas
-    double meanCost = calculateMean(costs);
-    double meanTime = calculateMean(times);
+    double meanCost = sumCost / 10;
+    double meanTime = sumTime / 10;
 
     // nome do arquivo: benchmarks/benchmark_<instancia>.txt
     std::string filename = "./benchmarks/benchmark_" + std::string(argv[1]) + ".txt";
