@@ -35,7 +35,7 @@ Solucao *ILS(Solucao *solucao, Data *data, int maxIter, int maxIterILS, double a
 
         if(localBest->costSolution < bestSolution->costSolution){
             *bestSolution = *localBest;
-            std::cout << "Iteracao: " << i << " Custo: " << bestSolution->costSolution << std::endl;
+            //std::cout << "Iteracao: " << i << " Custo: " << bestSolution->costSolution << std::endl;
         }
     }
 
@@ -55,8 +55,8 @@ int main(int argc, char** argv) {
     data.read();
     size_t n = data.getDimension();
 
-    std::vector<double> costs;
-    std::vector<double> times;
+    double sumCost = 0;
+    double sumTime = 0;
     
     for (int i = 0; i < 10; i++) {
         Solucao solucao;
@@ -72,24 +72,17 @@ int main(int argc, char** argv) {
         std::chrono::duration<double> duration = end - start;
         double timeTaken = duration.count();
         
-        costs.push_back(finalSolution->costSolution);
-        times.push_back(timeTaken);
+        sumCost += finalSolution->costSolution;
+        sumTime += timeTaken;
 
-        std::cout << "Execução " << (i + 1) << " - Custo: " << finalSolution->costSolution 
-                  << " - Tempo: " << timeTaken << " segundos" << std::endl;
     }
 
     // Cálculo das estatísticas
-    double meanCost = calculateMean(costs);
-    double meanTime = calculateMean(times);
+    double meanCost = sumCost / 10;
+    double meanTime = sumTime / 10;
 
-    // nome do arquivo: benchmarks/benchmark_<instancia>.txt
-    std::string filename = "./benchmarks/benchmark_" + std::string(argv[1]) + ".txt";
-    std::ofstream outFile(filename);
-    outFile << "Instância;Alpha;Custo Médio;Tempo Médio" << std::endl;
-    outFile << argv[1] << ";" << alpha << ";" << meanCost << ";" << meanTime << std::endl;
-    outFile.close();
-
+    std::cout << data.getInstanceName();
+    printf(";%.2lf;%.2lf\n", meanTime, meanCost);
 
     return 0;
 }
