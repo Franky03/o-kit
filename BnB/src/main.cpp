@@ -10,6 +10,7 @@ using namespace std;
 #include <list>
 #include <algorithm>
 #include <numeric>
+#include <chrono>
 
 struct Node {
     std::vector<std::pair<int, int>> forbidden_arcs; // lista de arcos proibidos desse nó
@@ -152,7 +153,6 @@ Node BranchAndBound(Data *data, double **cost, int mode){ // mode -> {1: DFS, 2:
 			if (current_node.lower_bound < upper_bound){
 				upper_bound = current_node.lower_bound;
 				best_node = current_node;
-				std::cout << "New upper bound: " << upper_bound << std::endl;
 			}
 		} else {
 			// adiciona os filhos do nó atual
@@ -196,12 +196,14 @@ int main(int argc, char** argv) {
 	}
 	
 	int mode = atoi(argv[2]) ? atoi(argv[2]) : 1;
-	std::cout << "Mode: " << (mode == 1 ? "DFS" : "BFS") << std::endl;
+	auto start = std::chrono::high_resolution_clock::now();
 	Node optimal = BranchAndBound(data, cost, mode);
+	auto end = std::chrono::high_resolution_clock::now();
 
-	std::cout << "Optimal solution: " << optimal.lower_bound << std::endl;
-	std::cout << "Subtours: ";
-	printSubtours(optimal.subtour);
+	std::chrono::duration<double> duration = end - start;
+
+	std::cout << data->getInstanceName();
+    printf(";%.d;%.2lf\n", (int)optimal.lower_bound, duration.count());
 
 	for (int i = 0; i < data->getDimension(); i++) delete [] cost[i];
 	delete [] cost;
