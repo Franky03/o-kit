@@ -1,1 +1,3 @@
 instance_name;mean_cost;mean_time
+bays29;2020;9.50
+burma14;3323;1.51

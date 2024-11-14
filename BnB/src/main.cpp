@@ -178,6 +178,7 @@ Node BranchAndBound(Data *data, double **cost, int mode){ // mode -> {1: DFS, 2:
 
 	}
 
+	hungarian_free(&p);
 	return best_node;
 	
 }

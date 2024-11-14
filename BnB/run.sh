@@ -7,7 +7,7 @@ make
 clear
 
 # Definir as instâncias que você quer rodar com a extensão .tsp
-instances=("bayg29.tsp" "bays29.tsp" "burma14.tsp" "fri26.tsp" "gr17.tsp" "gr21.tsp" "gr24.tsp" "ulysses16.tsp" "ulysses22.tsp")
+instances=("bayg29.tsp" "bays29.tsp" "burma14.tsp" "fri26.tsp" "gr17.tsp" "gr21.tsp" "gr24.tsp" "ulysses16.tsp")
 
 # Contagem de instâncias
 instances_count=${#instances[@]}
