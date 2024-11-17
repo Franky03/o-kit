@@ -165,7 +165,7 @@ function cost_function(shipment::Shipment, z, spot=nothing, ship=nothing, s=noth
         for i in 1:shipment.dz
     )
 
-    return prodCosts + spotCosts + shipmentCosts
+    return prod_costs + spot_costs + ship_costs
 
 end
 
