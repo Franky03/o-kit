@@ -3,37 +3,6 @@ using GLPK
 using DelimitedFiles
 using LinearAlgebra
 
-function read_instance(filename)
-    open(filename, "r") do file
-        dz = parse(Int, readline(file))
-        dy = parse(Int, readline(file))
-        
-        p1 = parse(Int, readline(file))
-        p2 = parse(Int, readline(file))
-        
-        linha = readline(file) |> strip
-        while isempty(linha)
-            linha = readline(file) |> strip
-        end
-
-        c = Array{Int,2}(undef, dz, dy)
-        c[1, :] = parse.(Int, split(linha))
-        for i in 2:dz
-            linha = readline(file) |> strip
-            c[i, :] = parse.(Int, split(linha))
-        end
-
-        linha = readline(file) |> strip
-        while isempty(linha)
-            linha = readline(file) |> strip
-        end
-
-        y = parse.(Int, split(linha))
-        
-        return dz, dy, p1, p2, c, y
-    end
-end
-
 struct Shipment 
     demands::Vector{Int} # demands for each location
     dy::Int # number of locations
