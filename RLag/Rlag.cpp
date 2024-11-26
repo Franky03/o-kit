@@ -16,6 +16,21 @@ vvi calculate_costs(vvi &cost, vector<double> &lambdas){
     return alt_costs;
 }
 
+pair<int, int> find_best_egdes(vvi &alt_costs, double mst_cost, int nodes, vector<pair<int, int>> &edges){
+    double best_cost = numeric_limits<double>::max();
+    pair<int, int> best_edges;
+    
+    return best_edges;
+}
+
+double sum_lambdas(vector<double> &lambdas){
+    double sum = 0;
+    for(int i = 0; i < lambdas.size(); i++){
+        sum += lambdas[i];
+    }
+    return sum;
+}
+
 void solveRlag(Lagrangean *rlag, vvi &cost, double ub){
     double epsilon = 1.0;
     int iter = 0;
@@ -32,6 +47,10 @@ void solveRlag(Lagrangean *rlag, vvi &cost, double ub){
     while(epsilon > MIN_EPSILON){
         Kruskal mst(alt_costs);
         double mst_cost = mst.MST(alt_costs.size());
+        mst_cost += (2 * sum_lambdas(lambdas));
+
+        vector<pair<int, int>> mst_edges = mst.getEdges();
+        pair<int, int> edges = find_best_egdes(alt_costs, mst_cost, alt_costs.size() - 1, mst_edges);
 
         
     }
