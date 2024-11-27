@@ -1,13 +1,52 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <string>
+#include <sstream>
 
 #include "Data.h"
 #include "BnB.h"
 #include "Rlag.h"
-#include "../TSP/src/ILS.h"
 
 using namespace std;
+
+double runTSP(const string& instancePath){
+    string command = "cd ../TSP && make && ./tsp ../instances/" + instancePath + ".tsp";
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        cerr << "Erro ao executar o comando: " << command << endl;
+        exit(1);
+    }
+
+    char buffer[128];
+    string output;
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        output += buffer;
+    }
+    pclose(pipe);
+
+    // Processar a saída para extrair `meanCost`
+    istringstream iss(output);
+    string line;
+    double meanCost = INFINITY;
+
+    while (getline(iss, line)) {
+        // Encontrar a linha contendo o resultado final
+        if (line.find(";") != string::npos) {
+            size_t lastSemicolon = line.rfind(';');
+            if (lastSemicolon != string::npos) {
+                meanCost = stod(line.substr(lastSemicolon + 1));
+            }
+        }
+    }
+
+    if (meanCost == INFINITY) {
+        cerr << "Erro: não foi possível extrair meanCost da saída do TSP" << endl;
+        exit(1);
+    }
+
+    return meanCost;
+}
 
 int main(int argc, char** argv){
     chrono::time_point<std::chrono::system_clock> start, end;
@@ -18,15 +57,9 @@ int main(int argc, char** argv){
 
 	const int dimension = data->getDimension();
 
-    Solucao solucao;
-    for (int j = 1; j <= dimension; j++) {
-        solucao.route.push_back(j);
-    }
-    solucao.route.push_back(1);
-
-    Solucao *finalSolution = ILS(&solucao, data, 50, dimension > 150 ? dimension / 2 : dimension, 0.5);
-
-    const double upperBound = finalSolution->costSolution;
+    double tsp_cost = runTSP(data->getInstanceName());
+    std::cout << "Custo do TSP: " << tsp_cost << std::endl;
+    const double upperBound = tsp_cost * 1.5;
     std::vector<vector<double>> cost;
     for(int i = 0; i < dimension; i++){
         vector<double> row;
