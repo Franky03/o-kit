@@ -5,6 +5,7 @@
 #include "Data.h"
 #include "BnB.h"
 #include "Rlag.h"
+#include "../TSP/src/ILS.h"
 
 using namespace std;
 
@@ -17,7 +18,15 @@ int main(int argc, char** argv){
 
 	const int dimension = data->getDimension();
 
-    const double upperBound = 10630.0;
+    Solucao solucao;
+    for (int j = 1; j <= dimension; j++) {
+        solucao.route.push_back(j);
+    }
+    solucao.route.push_back(1);
+
+    Solucao *finalSolution = ILS(&solucao, data, 50, dimension > 150 ? dimension / 2 : dimension, 0.5);
+
+    const double upperBound = finalSolution->costSolution;
     std::vector<vector<double>> cost;
     for(int i = 0; i < dimension; i++){
         vector<double> row;
@@ -38,7 +47,7 @@ int main(int argc, char** argv){
     chrono::duration<double> elapsed_seconds = end - start;
 
     cout << "Tempo de execução: " << elapsed_seconds.count() << "s" << endl;
-    cout << "Custo da solução: " << best_node.lower_bound << endl;
+    cout << "Custo da solução: " << best_node.rlag.cost << endl;
 
     return 0;
 }

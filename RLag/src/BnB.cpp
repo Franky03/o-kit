@@ -7,7 +7,7 @@
 #include <utility>
 #include <list>
 
-int choose_best_degree(vector<int> subgrads){
+int choose_best_degree(vector<int> &subgrads){
     int best_i = 0;
     int lowest = subgrads[0];
 
@@ -21,7 +21,7 @@ int choose_best_degree(vector<int> subgrads){
     return best_i;
 }
 
-std::vector<int> get_subtour(std::vector<std::vector<bool>> solution, int chosen){
+std::vector<int> get_subtour(std::vector<std::vector<bool>>& solution, int chosen){
     std::vector<int> subtour;
     
     for(int i = 0; i < solution.size(); i++){
@@ -48,13 +48,13 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
     int n = data->getDimension();
 
     vvi alt_cost = cost;
-    Lagrangean *rlag = new Lagrangean;
+    Lagrangean rlag;
+
+    solve_relag(rlag, cost, ub);
     
-    rlag = solve_relag(rlag, cost, ub);
-    
-    root.rlag = *rlag;
-    root.chosen = choose_best_degree(rlag->subgrad);
-    root.subtour = get_subtour(rlag->solution, root.chosen); // encontrar as conexões do menor grau
+    root.rlag = rlag;
+    root.chosen = choose_best_degree(rlag.subgrad);
+    root.subtour = get_subtour(rlag.solution, root.chosen); // encontrar as conexões do menor grau
 
     tree.push_back(root);
     
@@ -85,13 +85,7 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
                 alt_cost[child.forbidden_arcs[j].second][child.forbidden_arcs[j].first] = INFINITY;
             }
 
-            std::cout << "Child (1): " << child.rlag.cost << std::endl;
-            
-            Lagrangean *child_rlag = solve_relag(&child.rlag, alt_cost, ub);
-            child.rlag = *child_rlag;
-            delete child_rlag;
-
-            std::cout << "Child (2): " << child.rlag.cost << std::endl;
+            solve_relag(child.rlag, alt_cost, ub);
 
             if(child.rlag.cost < ub){
                 child.chosen = choose_best_degree(child.rlag.subgrad);
@@ -103,5 +97,4 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
     }
 
     return best;
-
 }

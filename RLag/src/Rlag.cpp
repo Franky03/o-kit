@@ -68,7 +68,7 @@ double sum_lambdas(vector<double> &lambdas){
 }
 
 vector<int> get_degrees(vector<pair<int,int>> &edges){
-    vector<int> graus(edges.size(), 0);
+    vector<int> graus(edges.size()+1, 0);
     for(int i = 0; i < edges.size(); i++){  
         graus[edges[i].first]++;
         graus[edges[i].second]++;
@@ -124,18 +124,15 @@ vvi remove_nodes(vvi costs){
     return costs;
 }
 
-Lagrangean* solve_relag(Lagrangean *rlag, vvi &cost, double ub) {
+void solve_relag(Lagrangean &rlag, vvi &cost, double ub) {
     double epsilon = 1.0;
     int iter = 0;
     double lr = 0;
 
     vector<double> lambdas;
 
-    // Cria um novo objeto na heap para retornar como ponteiro
-    Lagrangean* best_rlag = new Lagrangean(*rlag);
-
-    lambdas = best_rlag->lambdas.empty() ? vector<double>(cost.size(), 0) : rlag->lambdas;
-    rlag->lambdas = lambdas;
+    lambdas = rlag.lambdas.empty() ? vector<double>(cost.size(), 0) : rlag.lambdas;
+    rlag.lambdas = lambdas;
 
     while (epsilon > MIN_EPSILON) {
         vvi alt_costs = cost;
@@ -159,12 +156,12 @@ Lagrangean* solve_relag(Lagrangean *rlag, vvi &cost, double ub) {
         vector<int> subgrad = get_subgradient(solution);
         int sum_subgrad = sum_subgradientes(subgrad);
 
-        if (mst_cost > best_rlag->cost) {
-            best_rlag->cost = mst_cost;
-            best_rlag->lambdas = lambdas;
-            best_rlag->solution = solution;
-            best_rlag->subgrad = subgrad;
-            best_rlag->sum_subgrad = sum_subgrad;
+        if (mst_cost > rlag.cost) {
+            rlag.cost = mst_cost;
+            rlag.lambdas = lambdas;
+            rlag.solution = solution;
+            rlag.subgrad = subgrad;
+            rlag.sum_subgrad = sum_subgrad;
             iter = 0;
         } else {
             iter++;
@@ -175,15 +172,15 @@ Lagrangean* solve_relag(Lagrangean *rlag, vvi &cost, double ub) {
         }
 
         if (sum_subgrad == 0) {
-            best_rlag->cost = mst_cost;
-            best_rlag->lambdas = lambdas;
-            best_rlag->solution = solution;
-            best_rlag->subgrad = subgrad;
-            best_rlag->sum_subgrad = sum_subgrad;
+            rlag.cost = mst_cost;
+            rlag.lambdas = lambdas;
+            rlag.solution = solution;
+            rlag.subgrad = subgrad;
+            rlag.sum_subgrad = sum_subgrad;
             break;
         } else if (ub - mst_cost < 1 - 1e-2) {
             std::cout << "UB - MST: " << ub - mst_cost << std::endl;
-            best_rlag->cost = INFINITY;
+            rlag.cost = INFINITY;
             break;
         }
         lr = (epsilon * (ub - mst_cost)) / sum_subgrad;
@@ -191,7 +188,5 @@ Lagrangean* solve_relag(Lagrangean *rlag, vvi &cost, double ub) {
         update_lambda(lambdas, lr, subgrad);
     }
 
-    std::cout << "Best cost: " << best_rlag->cost << std::endl;
-
-    return best_rlag;
+    std::cout << "Best cost: " << rlag.cost << std::endl;
 }
