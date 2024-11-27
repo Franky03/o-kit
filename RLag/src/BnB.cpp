@@ -52,8 +52,6 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
 
     solve_relag(rlag, cost, ub, n);
 
-    std::cout << "SOLVED" << std::endl;
-
     root.rlag = *rlag;
     root.chosen = choose_best_degree(rlag->subgrad);
     root.subtour = get_subtour(rlag->solution, root.chosen); // encontrar as conexões do menor grau
@@ -67,6 +65,7 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
         if(current.rlag.sum_subgrad == 0 && current.rlag.cost < ub){
             ub = current.rlag.cost;
             best = current;
+            std::cout << "New best: " << ub << std::endl;
             continue;
         }
 

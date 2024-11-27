@@ -17,7 +17,7 @@ int main(int argc, char** argv){
 
 	const int dimension = data->getDimension();
 
-    const double upperBound = INFINITY;
+    const double upperBound = 10629.0;
     std::vector<vector<double>> cost;
     for(int i = 0; i < dimension; i++){
         vector<double> row;
