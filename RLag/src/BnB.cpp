@@ -49,14 +49,15 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
 
     vvi alt_cost = cost;
     Lagrangean *rlag = new Lagrangean;
-
-    solve_relag(rlag, cost, ub, n);
-
+    
+    rlag = solve_relag(rlag, cost, ub);
+    
     root.rlag = *rlag;
     root.chosen = choose_best_degree(rlag->subgrad);
     root.subtour = get_subtour(rlag->solution, root.chosen); // encontrar as conexões do menor grau
 
     tree.push_back(root);
+    
 
     while(!tree.empty()){
         Node current = tree.back();
@@ -82,8 +83,11 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
                 alt_cost[child.forbidden_arcs[j].first][child.forbidden_arcs[j].second] = 999999;
                 alt_cost[child.forbidden_arcs[j].second][child.forbidden_arcs[j].first] = 999999;
             }
+            std::cout << "Child (1): " << child.rlag.cost << std::endl;
 
-            solve_relag(&child.rlag, alt_cost, ub, n);
+            child.rlag = *(solve_relag(&child.rlag, alt_cost, ub));
+            
+            std::cout << "Child (2): " << child.rlag.cost << std::endl;
 
             if(child.rlag.cost < ub){
                 child.chosen = choose_best_degree(child.rlag.subgrad);
