@@ -33,9 +33,9 @@ std::vector<int> get_subtour(std::vector<std::vector<bool>> solution, int chosen
     return subtour;
 }
 
-void reset_costs(vvi &alt_cost, const vvi &cost, int dimension){
-    for(int i = 0; i < cost.size(); i++){
-        for(int j = 0; j < cost[i].size(); j++){
+inline void reset_costs(vvi &alt_cost, const vvi &cost, int dimension){
+    for(int i = 0; i < dimension; i++){
+        for(int j = 0; j < dimension; j++){
             alt_cost[i][j] = cost[i][j];
         }
     }
@@ -63,7 +63,7 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
         Node current = tree.back();
         tree.pop_back();
 
-        if(current.rlag.sum_subgrad == 0 && current.rlag.cost < ub){
+        if((current.rlag.sum_subgrad == 0) && (current.rlag.cost < ub)){
             ub = current.rlag.cost;
             best = current;
             std::cout << "New best: " << ub << std::endl;
@@ -77,22 +77,25 @@ Node BranchAndBound(Data *data, vvi & cost, double ub){
             child.rlag = current.rlag;
 
             child.forbidden_arcs.push_back(std::make_pair(current.chosen, current.subtour[i]));
+
             reset_costs(alt_cost, cost, n);
 
             for(int j=0; j<child.forbidden_arcs.size(); j++){
-                alt_cost[child.forbidden_arcs[j].first][child.forbidden_arcs[j].second] = 999999;
-                alt_cost[child.forbidden_arcs[j].second][child.forbidden_arcs[j].first] = 999999;
+                alt_cost[child.forbidden_arcs[j].first][child.forbidden_arcs[j].second] = INFINITY;
+                alt_cost[child.forbidden_arcs[j].second][child.forbidden_arcs[j].first] = INFINITY;
             }
-            std::cout << "Child (1): " << child.rlag.cost << std::endl;
 
-            child.rlag = *(solve_relag(&child.rlag, alt_cost, ub));
+            std::cout << "Child (1): " << child.rlag.cost << std::endl;
             
+            Lagrangean *child_rlag = solve_relag(&child.rlag, alt_cost, ub);
+            child.rlag = *child_rlag;
+            delete child_rlag;
+
             std::cout << "Child (2): " << child.rlag.cost << std::endl;
 
             if(child.rlag.cost < ub){
                 child.chosen = choose_best_degree(child.rlag.subgrad);
                 child.subtour = get_subtour(child.rlag.solution, child.chosen);
-
                 tree.push_back(child);
             }
             

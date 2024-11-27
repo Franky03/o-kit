@@ -182,6 +182,7 @@ Lagrangean* solve_relag(Lagrangean *rlag, vvi &cost, double ub) {
             best_rlag->sum_subgrad = sum_subgrad;
             break;
         } else if (ub - mst_cost < 1 - 1e-2) {
+            std::cout << "UB - MST: " << ub - mst_cost << std::endl;
             best_rlag->cost = INFINITY;
             break;
         }
