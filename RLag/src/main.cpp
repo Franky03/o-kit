@@ -59,7 +59,7 @@ int main(int argc, char** argv){
 
     double tsp_cost = runTSP(data->getInstanceName());
     std::cout << "Custo do TSP: " << tsp_cost << std::endl;
-    const double upperBound = tsp_cost * 1.5;
+    const double upperBound = tsp_cost * 1.1;
     std::vector<vector<double>> cost;
     for(int i = 0; i < dimension; i++){
         vector<double> row;

@@ -179,7 +179,6 @@ void solve_relag(Lagrangean &rlag, vvi &cost, double ub) {
             rlag.sum_subgrad = sum_subgrad;
             break;
         } else if (ub - mst_cost < 1 - 1e-2) {
-            std::cout << "UB - MST: " << ub - mst_cost << std::endl;
             rlag.cost = INFINITY;
             break;
         }
@@ -187,6 +186,4 @@ void solve_relag(Lagrangean &rlag, vvi &cost, double ub) {
 
         update_lambda(lambdas, lr, subgrad);
     }
-
-    std::cout << "Best cost: " << rlag.cost << std::endl;
 }
