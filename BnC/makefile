@@ -1,17 +1,26 @@
 #detecta se o sistema é de 32 ou 64 bits
 BITS_OPTION = -m64
 
+####diretorios com as libs do cplex
+CPLEXDIR  = /opt/ibm/ILOG/CPLEX_Studio2211/cplex
+CONCERTDIR = /opt/ibm/ILOG/CPLEX_Studio2211/concert
+   
+CPLEXLIBDIR   = $(CPLEXDIR)/lib/x86-64_linux/static_pic
+CONCERTLIBDIR = $(CONCERTDIR)/lib/x86-64_linux/static_pic
+
 #### define o compilador
 CPPC = g++
 #############################
 
 #### opcoes de compilacao e includes
-CCOPT = $(BITS_OPTION) -O3 -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++0x -g
+CCOPT = $(BITS_OPTION) -O3 -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++0x
 CONCERTINCDIR = $(CONCERTDIR)/include
-CCFLAGS = $(CCOPT)
+CPLEXINCDIR   = $(CPLEXDIR)/include
+CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) -I./include
 #############################
 
 #### flags do linker
+CCLNFLAGS = -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -lconcert -lm -lpthread -ldl 
 #############################
 
 #### diretorios com os source files e com os objs files
@@ -37,6 +46,7 @@ bnc: $(OBJS)
 #cada arquivo objeto depende do .c e dos headers (informacao dos header esta no arquivo de dependencias gerado pelo compiler)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo  "\033[31m \nCompiling $<: \033[0m"
+	@mkdir -p $(OBJDIR)
 	$(CPPC) $(CCFLAGS) -c $< -o $@
 	@echo  "\033[32m \ncreating $< dependency file: \033[0m"
 	$(CPPC) -std=c++0x  -MM $< > $(basename $@).d

@@ -3,10 +3,12 @@
 #include <string>
 #include <limits>
 #include <vector>
-
+#include <ilcplex/ilocplex.h>
 #include "Data.h"
 
-
+void BnC(Data *data, string instance, double ub){
+    
+}
 
 int main(int argc, char** argv)
 {
