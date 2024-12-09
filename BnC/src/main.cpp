@@ -5,8 +5,11 @@
 #include <vector>
 #include <ilcplex/ilocplex.h>
 #include "Data.h"
+#include "MyBranchCallback.h"
+#include "MyCutCallback.h"
+#include "MyLazyCallback.h"
 
-void Solver(Data *data, string instance, double ub){
+void Solver(Data *data, string instanceName, double ub){
     IloEnv env;
     IloModel model(env);
 
@@ -66,7 +69,53 @@ void Solver(Data *data, string instance, double ub){
     }
     /******************************************************/
     
+    /****************** Solve the model *******************/
+    IloCplex STSP(model);
+    STSP.setParam(IloCplex::TiLim, 2*60*60);
+    STSP.setParam(IloCplex::Threads, 1);
+    STSP.setParam(IloCplex::Param::MIP::Tolerances::MIPGap, 1e-08);
+    STSP.setParam(IloCplex::CutUp, ub);
+    //STSP.exportModel("stsp.lp");
 
+    double timeBefore, timeAfter;
+
+    const IloArray<IloBoolVarArray>& x_ref = x;
+
+    /********** Creating Branch Callback Object ***********/
+    MyBranchCallback* branchCbk = new (env) MyBranchCallback(env);
+    STSP.use(branchCbk);
+    /******************************************************/
+    
+    /************ Creating Cut Callback Object ************/
+    MyCutCallback* cutCbk = new (env) MyCutCallback(env, x_ref, dimension); 
+	STSP.use(cutCbk);
+    /******************************************************/
+
+     /************ Creating Lazy Callback Object ***********/
+    MyLazyCallback* lazyCbk = new (env) MyLazyCallback(env, x_ref, dimension);
+    STSP.use(lazyCbk);
+    /******************************************************/
+
+    try{ 
+	    timeBefore = STSP.getTime();
+	    STSP.solve();
+	    timeAfter = STSP.getTime();
+    }
+    catch(IloException& e){
+        std::cout << e;
+    }
+
+    printResults(STSP, instanceName, timeAfter-timeBefore);
+	printSolution(STSP, x, dimension);
+	//printResultsToFile(STSP, instanceName, timeAfter-timeBefore);
+    /******************************************************/
+
+    /**************** Cleaning the memory *****************/
+    delete branchCbk;
+    delete cutCbk;
+    delete lazyCbk;
+    env.end();
+    /******************************************************/
 
 }
 
