@@ -20,15 +20,15 @@ IloCplex::CallbackI* MyLazyCallback::duplicateCallback() const
 }
 /*****************************************************************************************************************/
 
-
+/************************************ Callback's code that is runned by CPLEX ************************************/
 void MyLazyCallback::main() 
 {	
 	/********** Getting the relaxed variables values **********/
 	IloNumArray x_vals(getEnv(), (0.5*(n)*(n-1)));
 	getValues(x_vals, x_vars);
 	/**********************************************************/
-
-    vector <vector<int> > cutSetPool;
+   
+	vector <vector<int> > cutSetPool;
 	vector<IloConstraint> cons; 
 
 	double **x_edge = new double*[n];
@@ -43,15 +43,15 @@ void MyLazyCallback::main()
 			x_edge[i][j] = x_vals[l++];
 		}
 	}
+	
+	cutSetPool = MaxBack(x_edge, n);
 
-    cutSetPool = MaxBack(x_edge, n);
-
-    /***************** Creating the constraints ***************/
+	/***************** Creating the constraints ***************/
 	for (int c = 0; c < cutSetPool.size(); c++) {
 		IloExpr p(getEnv());
 		for(int i = 0; i < cutSetPool[c].size(); i++){
 			for(int j = 0; j < cutSetPool[c].size(); j++){
-				if(cutSetPool[c][i] < cutSetPool[c][j]){ 
+				if(cutSetPool[c][i] < cutSetPool[c][j]){
 					p += x[cutSetPool[c][i]][cutSetPool[c][j]];
 				}
 			}
@@ -61,7 +61,7 @@ void MyLazyCallback::main()
 	}
 	/**********************************************************/
 
-    /*********** Adding the constraints to the model **********/
+	/*********** Adding the constraints to the model **********/
 	for(int i = 0; i < cons.size(); i++){
 		add(cons.at(i)).end();
 	}

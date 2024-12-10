@@ -109,3 +109,16 @@ vector <vector<int> > MaxBack(double** x, int n){
     
     return result;
 }
+
+
+
+vector <vector<int> > MinCut(double** x, int n){
+    vector<vector<int>> minCutSet;
+    double minCutValue = numeric_limits<double>::infinity();
+    for(int k=0; k < n-1; k++){
+
+    }
+
+}
+
+
