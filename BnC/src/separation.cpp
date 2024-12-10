@@ -4,37 +4,39 @@
 #include <set>
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 #include <ctime>
 
-vector<int> findInitialSubset(int n, set<int>& excluded){
+vector<int> findInitialSubset(int n, vector<int>& excluded) {
     vector<int> S0;
     int random_vertex;
+
     do {
         random_vertex = rand() % n; // Gera um número aleatório entre 0 e n-1
-    } while (excluded.find(random_vertex) != excluded.end()); // Garante que o vértice não foi usado antes
+    } while (find(excluded.begin(), excluded.end(), random_vertex) != excluded.end()); // Garante que o vértice não foi usado antes
+
     S0.push_back(random_vertex);
     return S0;
 }
 
 vector <vector<int> > MaxBack(double** x, int n){
     vector<vector<int>> result; // Armazena todos os subconjuntos best_S encontrados
-    set<int> excluded;          // Conjunto de vértices já escolhidos inicialmente
+    vector<int> excluded;      // Vetor de vértices já escolhidos inicialmente
 
     while (excluded.size() < n) {
         vector<int> S0 = findInitialSubset(n, excluded);
-        set<int> S(S0.begin(), S0.end());
 
-        set<int> complement;
+        vector<int> complement;
         for(int i = 0; i < n; ++i){
-            if(S.find(i) == S.end()){ // i não está em S
-                complement.insert(i); // adiciona i ao complemento
+            if (find(S0.begin(), S0.end(), i) == S0.end()) { // i não está em S
+                complement.push_back(i);                 // adiciona i ao complemento
             }
         }
 
         vector<double> maxback_val(n, 0.0);
 
         for(int i: complement){
-            for(int j: S){
+            for(int j: S0){
                 if(j > i)
                     maxback_val[i] += x[i][j];
                 else
@@ -44,10 +46,10 @@ vector <vector<int> > MaxBack(double** x, int n){
 
         double cut_val = 0.0;
         double mincut_val;
-        set<int> best_S = S;
+        vector<int> best_S = S0;
 
         // calcula valores iniciais 
-        for(int i: S){
+        for(int i: S0){
             for(int j: complement){
                 if(j > i)
                     cut_val += x[i][j];
@@ -74,8 +76,8 @@ vector <vector<int> > MaxBack(double** x, int n){
             }
 
             // atualiza S e complement
-            S.insert(selected_vertex);
-            complement.erase(selected_vertex);
+            S0.push_back(selected_vertex);
+            complement.erase(remove(complement.begin(), complement.end(), selected_vertex), complement.end());
 
             // atualiza cut_val
             cut_val = cut_val + 2 - 2 * maxback_val[selected_vertex];
@@ -92,16 +94,16 @@ vector <vector<int> > MaxBack(double** x, int n){
             // atualiza mincut_val
             if(cut_val < mincut_val){
                 mincut_val = cut_val;
-                best_S = S;
+                best_S = S0;
             } 
         }
 
         if (!best_S.empty() && best_S.size() < n) {
             // Adiciona o melhor subconjunto encontrado ao resultado apenas se ele não for vazio ou completo
-            result.push_back(vector<int>(best_S.begin(), best_S.end()));
+            result.push_back(best_S);
         }
 
-        excluded.insert(best_S.begin(), best_S.end());
+        excluded.insert(excluded.end(), best_S.begin(), best_S.end());
 
     }
     
