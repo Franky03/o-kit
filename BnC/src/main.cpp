@@ -9,7 +9,7 @@
 #include "MyCutCallback.h"
 #include "MyLazyCallback.h"
 
-void Solver(Data *data, string instanceName, double ub){
+void STSP_Solve(Data *data, string instanceName, double ub){
     IloEnv env;
     IloModel model(env);
 
@@ -72,7 +72,7 @@ void Solver(Data *data, string instanceName, double ub){
     /****************** Solve the model *******************/
     IloCplex STSP(model);
     STSP.setParam(IloCplex::TiLim, 2*60*60);
-    STSP.setParam(IloCplex::Threads, 1);
+    //STSP.setParam(IloCplex::Threads, 1);
     STSP.setParam(IloCplex::Param::MIP::Tolerances::MIPGap, 1e-08);
     STSP.setParam(IloCplex::CutUp, ub);
     //STSP.exportModel("stsp.lp");
@@ -134,7 +134,10 @@ int main(int argc, char** argv)
     Data * data = new Data(argc, argv[1]);
     data->readData();
 
-    string instanceName = data->getInstanceName();
+    string instanceName = getInstanceName(argv);
+    STSP_Solve(data, instanceName, ub);
+
+    std::cout << "End of Branch and Cut" << std::endl;
     
     return 0;
 }
