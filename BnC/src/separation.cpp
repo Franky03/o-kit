@@ -114,16 +114,6 @@ vector <vector<int> > MaxBack(double** x, int n){
 
     }
 
-    std::cout << "Subconjuntos: " << std::endl;
-    for (vector<int> S : result) {
-        std::cout << "{ ";
-        for (int i : S) {
-            std::cout << i << " ";
-        }
-        std::cout << "}" << std::endl;
-        std::cout << std::endl;
-    }
-
     return result;
 }
 
@@ -209,6 +199,7 @@ MaxBackResult MaxBackMod(double** x, int n, vector<int> &S0){
     result.s = s;
     result.t = t;
     
+
     return result;
 }
 
@@ -251,6 +242,7 @@ void printV(vector<int> V){
 }
 
 vector<vector<int>> MinCut(double** x, int n) {
+    std::cout << "MinCut" << std::endl;
     vector<vector<int>> minCutSet;
     double minCutValue = numeric_limits<double>::infinity();
     vector<int> excluded;
@@ -286,7 +278,7 @@ vector<vector<int>> MinCut(double** x, int n) {
             if (result.cut_val < 2 - EPSILON) {
                 minCutValue = result.cut_val;
                 V = result.S;
-                printV(V);
+                
                 addToExcluded(excluded, V);
             }
             Shrink(x, n, result.s, result.t);
