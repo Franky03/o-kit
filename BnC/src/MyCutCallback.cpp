@@ -60,10 +60,10 @@ void MyCutCallback::main()
 		}
 	}
 	
-	cutSetPool = MaxBack(x_edge, n);
+  cutSetPool = MinCut(x_edge, n);
 	
 	if (cutSetPool.empty() && depth <= 7) {
-		cutSetPool = MinCut(x_edge, n);
+		//cutSetPool = MinCut(x_edge, n);
 		//cutSetPool = MultipleMinCut(x_edge, n);
 	}
 
