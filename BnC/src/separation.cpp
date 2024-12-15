@@ -208,118 +208,102 @@ MaxBackResult MaxBackMod(double** x, int n, vector<int> &S0){
     result.S = best_S;
     result.s = s;
     result.t = t;
-
+    
     return result;
 }
 
-void Shrink(double **x, int& n, int s, int t){
-    if (s > t) std::swap(s, t); // Garantir que 's' seja o menor índice para simplificar
-    
-    // Passo 1: Somar as arestas incidentes de t em s
+void Shrink(double **x, int& n, int s, int t) {
+    if (s > t) std::swap(s, t); 
+
     for (int i = 0; i < n; i++) {
         if (i != s && i != t) {
-            x[s][i] += x[t][i];  // Soma a aresta (t, i) em (s, i)
-            x[i][s] = x[s][i];    // Mantém a simetria da matriz
+            x[s][i] += x[t][i];
+            x[i][s] = x[s][i]; 
         }
     }
 
-    // Passo 2: Remover a linha e a coluna de t
     for (int i = t; i < n - 1; i++) {
         for (int j = 0; j < n; j++) {
-            x[i][j] = x[i + 1][j]; // Desloca as linhas para cima
+            x[i][j] = x[i + 1][j];
         }
     }
-
     for (int j = t; j < n - 1; j++) {
         for (int i = 0; i < n; i++) {
-            x[i][j] = x[i][j + 1]; // Desloca as colunas para a esquerda
+            x[i][j] = x[i][j + 1];
         }
     }
-
+    n--; // Ajustar o tamanho da matriz
 }
 
-
-vector<vector<int> > MinCut(double** x, int n){
-
-    for(int i = 0; i < n; i++){
-        for(int j = i+1; j < n; j++){
-            if(x[i][j] <= EPSILON){
-                x[i][j] = 0;
-            }
+void addToExcluded(vector<int>& excluded, vector<int>& S){
+    for(int i: S){
+        if(find(excluded.begin(), excluded.end(), i) == excluded.end()){
+            excluded.push_back(i);
         }
     }
-    
+}
 
+void printV(vector<int> V){
+    for(int i: V){
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+}
+
+vector<vector<int>> MinCut(double** x, int n) {
     vector<vector<int>> minCutSet;
     double minCutValue = numeric_limits<double>::infinity();
     vector<int> excluded;
     vector<int> V;
     int original_n = n;
-    std::cout << "Original n: " << original_n << std::endl;
-    
-    while(excluded.size() < original_n){
-      while (n > 1) {
-          vector<int> S = findInitialSubset(n, excluded);
-          MaxBackResult result = MaxBackMod(x, n, S);
-          if(result.s == -1 || result.t == -1){
-            break;
-          }
-          std::cout << "CutValue: " << result.cut_val << std::endl;
-          std::cout << "S: ";
-          for(int i: result.S){
-            std::cout << i << " ";
-          }
-          std::cout << std::endl;
-          std::cout << "s: " << result.s << std::endl;
-          std::cout << "t: " << result.t << std::endl;
-          if (result.cut_val < 2 - EPSILON) {
-              minCutValue = result.cut_val;
-              V = result.S;
-          }
 
-          // Contrai os vértices s e t
-          Shrink(x, n, result.s, result.t);
-          n--;
-          std::cout << "n: " << n << std::endl;
-          std::cout << "V[0]: ";
-          for(int i: V){
-            std::cout << i << " ";
-          }
-          std::cout << std::endl;
-      }
-      std::cout << "n: " << n << std::endl; 
-      std::cout << "V[1]: ";
-      for(int i: V){
-        std::cout << i << " ";
-      }
-        std::cout << std::endl;
-      // Adiciona o corte mínimo ao conjunto de cortes
-      if (!V.empty() && V.size() < n) {
-          minCutSet.push_back(V);
-      }
-      else {
-        minCutSet = {}; 
-      }
-      
-      if(!V.empty()){
-        std::cout << "V: ";
-        for(int i: V){
-          std::cout << i << " ";
+    double** original_x = new double*[n];
+    for (int i = 0; i < n; i++) {
+        original_x[i] = new double[n];
+        for (int j = 0; j < n; j++) {
+            original_x[i][j] = x[i][j];
         }
-        std::cout << std::endl;
-        
-        std::cout << "Excluded: ";
-        for(int i: excluded){
-          std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        excluded.insert(excluded.end(), V.begin(), V.end());
-      }
-      
-      std::cout << "MinCutValue: " << minCutValue << std::endl;
     }
+
+    while (excluded.size() < original_n) {
+        vector<int> S = findInitialSubset(n, excluded);
+        V = S;
     
+        x = new double*[original_n];
+        for (int i = 0; i < original_n; i++) {
+            x[i] = new double[original_n];
+            for (int j = 0; j < original_n; j++) {
+                x[i][j] = original_x[i][j];
+            }
+        }
+        n = original_n;
+
+        while (n > 1) {
+            MaxBackResult result = MaxBackMod(x, n, S);
+            if (result.s == -1 || result.t == -1) {
+                break;
+            }
+            if (result.cut_val < 2 - EPSILON) {
+                minCutValue = result.cut_val;
+                V = result.S;
+                printV(V);
+                addToExcluded(excluded, V);
+            }
+            Shrink(x, n, result.s, result.t);
+        }
+
+        if (!V.empty() && V.size() < n) {
+            minCutSet.push_back(V);
+        } else {
+            minCutSet = {};
+        }
+    }
+
+    // Libera a memória original_x
+    for (int i = 0; i < original_n; i++) {
+        delete[] original_x[i];
+    }
+    delete[] original_x;
+
     return minCutSet;
 }
-
-
