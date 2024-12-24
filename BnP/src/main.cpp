@@ -5,6 +5,7 @@
 #include <ilcplex/ilocplex.h>
 #include <chrono>
 
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -21,8 +22,6 @@ int main(int argc, char **argv)
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-
-  
 
     end = std::chrono::system_clock::now();
 
