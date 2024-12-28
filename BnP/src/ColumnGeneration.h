@@ -7,8 +7,8 @@
 #include "Master.h"
 
 struct ColumnNode {
-  std::vector<std::pair<int, int>> *T; // together items
-  std::vector<std::pair<int, int>> *S; // separated items
+  std::vector<std::pair<int, int>> T; // together items
+  std::vector<std::pair<int, int>> S; // separated items
   
   std::vector<double> solution;
   bool isFeasible;

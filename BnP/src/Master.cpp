@@ -7,12 +7,12 @@ Master::Master(Data& data){
   numItems = data.getNItems();
   
   model = IloModel(env);
-  obj = IloMinimize(env);
+
   cplex = IloCplex(model);
   lambdas = IloNumVarArray(env, numItems, 0.0, IloInfinity);
   constraints = IloRangeArray(env);
   
-  columns = std::vector<std::vector<bool>>(numItems, std::vector<bool>(numItems, 0));
+  columns = std::vector<std::vector<bool>>(numItems, std::vector<bool>(numItems, false));
 
   for(int i = 0; i < numItems; ++i){
     char var_name[100];
@@ -26,9 +26,11 @@ Master::Master(Data& data){
 
   }
 
-  obj.setExpr(exp);
+  obj = IloMinimize(env, exp);
   model.add(obj);
   model.add(constraints);
+
+  cplex.exportModel("master.lp");
 }
 
 Master::~Master(){

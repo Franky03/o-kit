@@ -39,12 +39,8 @@ Knapsack::~Knapsack(){
 }
 
 double Knapsack::solve(){
-  cplex.setOut(std::cout); // Ativa o log
-  cplex.exportModel("knapsack.lp"); // Exporta o modelo para análise
-
   cplex.setOut(env.getNullStream());
   cplex.solve();
-  std::cout << "Objective value: " << cplex.getObjValue() << std::endl;
   return cplex.getObjValue();
 }
 

@@ -40,23 +40,18 @@ void ColumnGeneration(Data& data, Master& master, Knapsack& knap, ColumnNode *ro
   
   // forçar os lambdas para o branch and bound (força os items
   // separados e os juntos a ficarem juntos na relaxação linear)
-  master.forceLambda(root->T, root->S);
-  knap.changeConstraints(root->T, root->S);
-  std::cout << "Forced and changed" << std::endl;
+  master.forceLambda(&root->T, &root->S);
+  knap.changeConstraints(&root->T, &root->S);
+
   IloNumArray *pi;
   double knap_result;
   double master_result;
-  
-  std::cout << "Solving master" << std::endl;
   master_result = master.solve();
 
   while(true){
     pi = master.getDuals();
-
-    std::cout << "Got duals" << std::endl;
     
     knap.changeObjective(pi);
-    std::cout << "Changed objective" << std::endl;
     knap_result = knap.solve();
 
     delete pi;
@@ -65,7 +60,6 @@ void ColumnGeneration(Data& data, Master& master, Knapsack& knap, ColumnNode *ro
       break;
     }
     
-    std::cout << "Adding column" << std::endl;
     std::vector<bool> *column = knap.getPattern();
     master.addColumn(*column);
     delete column;

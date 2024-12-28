@@ -44,28 +44,25 @@ double BranchAndPrice(Data &data){
     return ub;
   }
 
+  
   ColumnNode *together = new ColumnNode(root); // first node
   ColumnNode *separated = new ColumnNode(root); // second node
-
-  std::pair<int,int> fraction = master.getMostFractional();
   
-  together->T->push_back(fraction);
-  separated->S->push_back(fraction);
+  std::pair<int,int> fraction = master.getMostFractional();
+   
+  together->T.push_back(fraction);
+  separated->S.push_back(fraction);
 
   tree.push_back(together);
   tree.push_back(separated);
 
+  
   while(!tree.empty()){
-    std::cout << "Tree size: " << tree.size() << "\n";
     ColumnNode *node = tree.back();
-    std::cout << "Node value: " << node->value << "\n";
 
     tree.pop_back();
       
-    std::cout << "Column Generation" << "\n";
     ColumnGeneration(data, master, knap, node);
-
-    std::cout << "Column Generated" << "\n";
 
     node->isFeasible = isFeasible(node->solution);
 
@@ -76,13 +73,15 @@ double BranchAndPrice(Data &data){
     }
 
     else if(node->value < ub - 1) {
+      std::cout << "Node value: " << node->value << "\n";
+
       std::pair<int,int> fraction = master.getMostFractional();
       
       together = new ColumnNode(node);
       separated = new ColumnNode(node);
       // ele herda os valores do pai
-      together->T->push_back(fraction);
-      separated->S->push_back(fraction);
+      together->T.push_back(fraction);
+      separated->S.push_back(fraction);
       // adiciona novos valores para os filhos (os fractions)
       tree.push_back(together);
       tree.push_back(separated);
