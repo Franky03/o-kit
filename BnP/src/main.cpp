@@ -23,8 +23,8 @@ bool isFeasible(std::vector<double> &solution)
 }
 
 double BranchAndPrice(Data &data){
-  Master master = Master(data);
-  Knapsack knap = Knapsack(data);
+  Master *master = new Master(data);
+  Knapsack *knap = new Knapsack(data);
 
   std::list<ColumnNode*> tree;
   ColumnNode *root = new ColumnNode();
@@ -48,7 +48,7 @@ double BranchAndPrice(Data &data){
   ColumnNode *together = new ColumnNode(root); // first node
   ColumnNode *separated = new ColumnNode(root); // second node
   
-  std::pair<int,int> fraction = master.getMostFractional();
+  std::pair<int,int> fraction = master->getMostFractional();
    
   together->T.push_back(fraction);
   separated->S.push_back(fraction);
@@ -75,7 +75,7 @@ double BranchAndPrice(Data &data){
     else if(node->value < ub - 1) {
       std::cout << "Node value: " << node->value << "\n";
 
-      std::pair<int,int> fraction = master.getMostFractional();
+      std::pair<int,int> fraction = master->getMostFractional();
       
       together = new ColumnNode(node);
       separated = new ColumnNode(node);
@@ -88,7 +88,9 @@ double BranchAndPrice(Data &data){
     }
 
   }
-
+  
+  delete master;
+  delete knap;
   for(auto it = tree.begin(); it != tree.end(); ++it){
     delete *it;
   }

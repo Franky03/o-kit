@@ -102,7 +102,7 @@ typedef int (*funcptr) (const void *, const void *);
 typedef struct {
   itype   p;              /* profit                  */
   itype   w;              /* weight                  */
-  boolean x;             /* solution variable       */
+  boolean x;              /* solution variable       */
   int index;
 } item;
 

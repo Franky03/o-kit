@@ -1,58 +1,65 @@
 #include "ColumnGeneration.h"
 
-std::vector<double> ColumnGenerationMinKnap(Data& data, Master& master, Knapsack& knap){
-  IloNumArray *pi;
+std::vector<double> ColumnGenerationMinKnap(Data& data, Master* master, Knapsack* knap){
   std::pair<double, std::vector<bool>*> result;
   std::vector<double> solution;
 
-  master.solve();
+  master->solve();
+
   int count = 0;
   while(true){
-    pi = master.getDuals();
-    result = knap.solveMinKnap(pi, data);
+    IloNumArray *pi = master->getDuals();
+    std:: cout << "Pi: ";
+    for(int i = 0; i < pi->getSize(); ++i){
+      std::cout << (*pi)[i] << " ";
+    }
+    std::cout << std::endl;
+    result = knap->solveMinKnap(pi, data);
+
+    delete pi;
     
     if(1 - result.first >= 0 - 1e-6) {
-      delete pi;
       delete result.second;
       break;
     }
 
-    master.addColumn(*result.second);
-    delete result.second;
-    delete pi;
+    master->addColumn(*result.second);
 
-    master.solve();
+    delete result.second;
+
+    master->solve();
     count++;
   }
   std::cout << "Number of columns: " << count << std::endl;
 
-  solution = master.getLambdas();
+  solution = master->getLambdas();
   std::cout << "Solution: ";
   for(int i = 0; i < solution.size(); ++i){
     std::cout << solution[i] << " ";
   }
   std::cout << std::endl;
+  exit(0);
   return solution;
 
 }
 
-void ColumnGeneration(Data& data, Master& master, Knapsack& knap, ColumnNode *root){
+void ColumnGeneration(Data& data, Master* master, Knapsack* knap, ColumnNode *root){
   
   // forçar os lambdas para o branch and bound (força os items
   // separados e os juntos a ficarem juntos na relaxação linear)
-  master.forceLambda(&root->T, &root->S);
-  knap.changeConstraints(&root->T, &root->S);
+  master->forceLambda(&root->T, &root->S);
+  knap->changeConstraints(&root->T, &root->S);
 
   IloNumArray *pi;
   double knap_result;
   double master_result;
-  master_result = master.solve();
+  master_result = master->solve();
 
   while(true){
-    pi = master.getDuals();
+    pi = master->getDuals();
     
-    knap.changeObjective(pi);
-    knap_result = knap.solve();
+    knap->changeObjective(pi);
+    knap_result = knap->solve();
 
     delete pi;
     
@@ -60,14 +67,14 @@ void ColumnGeneration(Data& data, Master& master, Knapsack& knap, ColumnNode *ro
       break;
     }
     
-    std::vector<bool> *column = knap.getPattern();
-    master.addColumn(*column);
+    std::vector<bool> *column = knap->getPattern();
+    master->addColumn(*column);
     delete column;
 
-    master_result = master.solve();
+    master_result = master->solve();
 
   }
 
   root->value = master_result;
-  root->solution = master.getLambdas();
+  root->solution = master->getLambdas();
 }

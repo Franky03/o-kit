@@ -26,8 +26,8 @@ struct ColumnNode {
 
 };
 
-std::vector<double> ColumnGenerationMinKnap(Data& data, Master& master, Knapsack& knap);
+std::vector<double> ColumnGenerationMinKnap(Data& data, Master* master, Knapsack* knap);
 
-void ColumnGeneration(Data& data, Master& master, Knapsack& knap, ColumnNode *root);
+void ColumnGeneration(Data& data, Master* master, Knapsack* knap, ColumnNode *root);
 
 #endif

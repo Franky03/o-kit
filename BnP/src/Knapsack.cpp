@@ -30,12 +30,18 @@ Knapsack::Knapsack(Data& data){
   model.add(constraints);
   model.add(var_constraints);
 
+  cplex.exportModel("knapsack.lp");
+
 }
 
 Knapsack::~Knapsack(){
   model.end();
   cplex.end();
   env.end();
+  obj.end();
+  x.end();
+  constraints.end();
+  var_constraints.end();
 }
 
 double Knapsack::solve(){
@@ -58,14 +64,42 @@ std::vector<bool>* getBoolPattern(item *items, int numItems){
   return pattern;
 }
 
-std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){
-  int *w = new int[numItems]; // weight 
+//std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){
+//  long int *p = new long int[numItems];
+//
+//  for(int i = 0; i < numItems; ++i){
+//    p[i] = (long int) (*pi)[i] * M;
+//  }
+//
+//  int *w = new int[numItems];
+//
+//  for(int i = 0; i < numItems; ++i){
+//    w[i] = (int) data.getItemWeight(i);
+//  }
+//
+//  int *x = new int[numItems];
+//
+//  double z = minknap(numItems, p, w, x, data.getBinCapacity()) / M;
+//
+//  std::vector<bool> *pattern = new std::vector<bool>(numItems);
+//
+//  for(int i = 0; i < numItems; ++i){
+//    (*pattern)[i] = x[i];
+//  }
+//
+//  delete [] p;
+//  delete [] w;
+//  delete [] x;
+//
+//  return std::make_pair(z, pattern);
+//}
+
+std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){ 
   item items[numItems];
 
   for(int i = 0; i < numItems; ++i){
-    w[i] = data.getItemWeight(i);
     items[i].p = (itype) (*pi)[i] * M;
-    items[i].w = (itype) w[i];
+    items[i].w = (itype) data.getItemWeight(i);
     items[i].x = false;
     items[i].index = i;
   }
@@ -73,11 +107,9 @@ std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Da
   stype lb = 0;
   stype ub = numItems * M * M;
 
-  stype z = combo(items, items + numItems-1, (stype)data.getBinCapacity(), lb, ub, true, false) / M;
-  
+  double z = (double) combo(items, (items + numItems-1), (stype)data.getBinCapacity(), lb, ub, true, false) / M;
+    std::cout << "Z: " << z << std::endl; 
   std::vector<bool> *pattern = getBoolPattern(items, numItems);
-  
-  delete[] w;
 
   return std::make_pair(z, pattern);
 }
@@ -103,16 +135,18 @@ void Knapsack::changeConstraints(std::vector<std::pair<int, int>> *T, std::vecto
   
   if(S != NULL) {
     for(int i = 0; i < S->size(); ++i){
+      exp = x[(*S)[i].first] + x[(*S)[i].second];
       var_constraints.add(
-        x[(*S)[i].first] + x[(*S)[i].second] <= 1
+        exp <= 1
       ); // this is forcing the variables to be different (x1 + x2 <= 1)
     }
   }
 
   if(T != NULL) {
     for(int i = 0; i < T->size(); ++i){
+      exp = x[(*T)[i].first] - x[(*T)[i].second];
       var_constraints.add(
-        x[(*T)[i].first] - x[(*T)[i].second] == 0
+        exp == 0
       ); 
       // this is forcing the variables to be equal (x1 - x2 == 0)
     }

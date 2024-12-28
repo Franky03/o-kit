@@ -9,7 +9,7 @@ Master::Master(Data& data){
   model = IloModel(env);
 
   cplex = IloCplex(model);
-  lambdas = IloNumVarArray(env, numItems, 0.0, IloInfinity);
+  lambdas = IloNumVarArray(env, numItems, 0, IloInfinity);
   constraints = IloRangeArray(env);
   
   columns = std::vector<std::vector<bool>>(numItems, std::vector<bool>(numItems, false));
@@ -37,6 +37,9 @@ Master::~Master(){
   model.end();
   cplex.end();
   env.end();
+  obj.end();
+  lambdas.end();
+  constraints.end();
 }
 
 double Master::solve(){
@@ -51,7 +54,6 @@ void Master::addColumn(std::vector<bool> &column){
   for(int i = 0; i < numItems; ++i){
     col += constraints[i](column[i]);
   }
-
   columns.push_back(column);
   
   char var_name[100];
@@ -64,6 +66,13 @@ void Master::addColumn(std::vector<bool> &column){
 IloNumArray* Master::getDuals(){
   IloNumArray* duals = new IloNumArray(env, numItems);
   cplex.getDuals(*duals, constraints);
+
+  std::cout << "Duals: ";
+  for(int i = 0; i < numItems; ++i){
+    std::cout << (*duals)[i] << " ";
+  }
+  std::cout << std::endl;
+
   return duals;
 }
 
