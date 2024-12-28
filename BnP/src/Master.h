@@ -14,7 +14,7 @@ class Master {
   IloNumVarArray lambdas;
   IloRangeArray constraints;
 
-  std::vector<std::vector<int>> columns;
+  std::vector<std::vector<bool>> columns;
 
   int numItems;
   
@@ -22,13 +22,13 @@ class Master {
     Master(Data& data);
     ~Master();
     double solve();
-    void addColumn(std::vector<int> &column);
+    void addColumn(std::vector<bool> &column);
     IloNumArray* getDuals();
     std::vector<double> getLambdas();
     // this is for branch and bound
     std::vector<int> *getBannedLambdas(std::vector<std::pair<int, int>> *T, std::vector<std::pair<int, int>> *S);
     void forceLambda(std::vector<std::pair<int, int>> *T, std::vector<std::pair<int, int>> *S);
-
+    std::pair<int, int> getMostFractional();
 };
 
 #endif

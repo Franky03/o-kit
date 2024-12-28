@@ -14,7 +14,7 @@ class Knapsack {
   IloObjective obj;
   IloRangeArray constraints;
 
-  IloRangeArray constraints2;
+  IloRangeArray var_constraints; // constraints for variables(bnp);
   IloBoolVarArray x;
 
   int numItems;
