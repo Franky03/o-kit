@@ -67,11 +67,11 @@ IloNumArray* Master::getDuals(){
   IloNumArray* duals = new IloNumArray(env, numItems);
   cplex.getDuals(*duals, constraints);
 
-  std::cout << "Duals: ";
-  for(int i = 0; i < numItems; ++i){
-    std::cout << (*duals)[i] << " ";
-  }
-  std::cout << std::endl;
+//  std::cout << "Duals: ";
+//  for(int i = 0; i < numItems; ++i){
+//    std::cout << (*duals)[i] << " ";
+//  }
+//  std::cout << std::endl;
 
   return duals;
 }

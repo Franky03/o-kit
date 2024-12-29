@@ -97,9 +97,9 @@ std::vector<bool>* getBoolPattern(item *items, int numItems){
 std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){ 
   item items[numItems];
 
-  for(int i = 0; i < numItems; ++i){
-    items[i].p = (itype) (*pi)[i] * M;
-    items[i].w = (itype) data.getItemWeight(i);
+  for(int i = 0; i < numItems; ++i)  {
+    items[i].p = (*pi)[i] * M;
+    items[i].w = data.getItemWeight(i);
     items[i].x = false;
     items[i].index = i;
   }
@@ -108,7 +108,7 @@ std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Da
   stype ub = numItems * M * M;
 
   double z = (double) combo(items, (items + numItems-1), (stype)data.getBinCapacity(), lb, ub, true, false) / M;
-    std::cout << "Z: " << z << std::endl; 
+   
   std::vector<bool> *pattern = getBoolPattern(items, numItems);
 
   return std::make_pair(z, pattern);

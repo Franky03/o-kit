@@ -23,11 +23,12 @@ bool isFeasible(std::vector<double> &solution)
 }
 
 double BranchAndPrice(Data &data){
+
   Master *master = new Master(data);
   Knapsack *knap = new Knapsack(data);
 
   std::list<ColumnNode*> tree;
-  ColumnNode *root = new ColumnNode();
+  ColumnNode *root = new ColumnNode;
 
   double ub = 1e9;
   // resolve a geração de colunas para o min knapsack (subproblema)

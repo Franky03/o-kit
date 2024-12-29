@@ -1,19 +1,14 @@
 #include "ColumnGeneration.h"
 
 std::vector<double> ColumnGenerationMinKnap(Data& data, Master* master, Knapsack* knap){
+  IloNumArray *pi;
   std::pair<double, std::vector<bool>*> result;
   std::vector<double> solution;
 
   master->solve();
 
-  int count = 0;
   while(true){
-    IloNumArray *pi = master->getDuals();
-    std:: cout << "Pi: ";
-    for(int i = 0; i < pi->getSize(); ++i){
-      std::cout << (*pi)[i] << " ";
-    }
-    std::cout << std::endl;
+    pi = master->getDuals();
     result = knap->solveMinKnap(pi, data);
 
     delete pi;
@@ -28,17 +23,11 @@ std::vector<double> ColumnGenerationMinKnap(Data& data, Master* master, Knapsack
     delete result.second;
 
     master->solve();
-    count++;
+    
   }
-  std::cout << "Number of columns: " << count << std::endl;
-
+  
   solution = master->getLambdas();
-  std::cout << "Solution: ";
-  for(int i = 0; i < solution.size(); ++i){
-    std::cout << solution[i] << " ";
-  }
-  std::cout << std::endl;
-  exit(0);
+ 
   return solution;
 
 }
