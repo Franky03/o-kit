@@ -35,13 +35,7 @@ Knapsack::Knapsack(Data& data){
 }
 
 Knapsack::~Knapsack(){
-  model.end();
-  cplex.end();
   env.end();
-  obj.end();
-  x.end();
-  constraints.end();
-  var_constraints.end();
 }
 
 double Knapsack::solve(){
@@ -63,36 +57,6 @@ std::vector<bool>* getBoolPattern(item *items, int numItems){
 
   return pattern;
 }
-
-//std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){
-//  long int *p = new long int[numItems];
-//
-//  for(int i = 0; i < numItems; ++i){
-//    p[i] = (long int) (*pi)[i] * M;
-//  }
-//
-//  int *w = new int[numItems];
-//
-//  for(int i = 0; i < numItems; ++i){
-//    w[i] = (int) data.getItemWeight(i);
-//  }
-//
-//  int *x = new int[numItems];
-//
-//  double z = minknap(numItems, p, w, x, data.getBinCapacity()) / M;
-//
-//  std::vector<bool> *pattern = new std::vector<bool>(numItems);
-//
-//  for(int i = 0; i < numItems; ++i){
-//    (*pattern)[i] = x[i];
-//  }
-//
-//  delete [] p;
-//  delete [] w;
-//  delete [] x;
-//
-//  return std::make_pair(z, pattern);
-//}
 
 std::pair<double, std::vector<bool>*> Knapsack::solveMinKnap(IloNumArray *pi, Data& data){ 
   item items[numItems];

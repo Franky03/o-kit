@@ -34,12 +34,7 @@ Master::Master(Data& data){
 }
 
 Master::~Master(){
-  model.end();
-  cplex.end();
   env.end();
-  obj.end();
-  lambdas.end();
-  constraints.end();
 }
 
 double Master::solve(){

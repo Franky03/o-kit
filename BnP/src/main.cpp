@@ -36,8 +36,8 @@ double BranchAndPrice(Data &data){
   root->value = std::accumulate(root->solution.begin(), root->solution.end(), 0.0);
   root->isFeasible = isFeasible(root->solution);
     
-  std::cout << "Root value: " << root->value << "\n";
-  std::cout << "Root is feasible: " << root->isFeasible << "\n";
+  //std::cout << "Root value: " << root->value << "\n";
+  //std::cout << "Root is feasible: " << root->isFeasible << "\n";
 
   if(root->isFeasible){
     ub = root->value;
@@ -74,7 +74,7 @@ double BranchAndPrice(Data &data){
     }
 
     else if(node->value < ub - 1) {
-      std::cout << "Node value: " << node->value << "\n";
+      //std::cout << "Node value: " << node->value << "\n";
 
       std::pair<int,int> fraction = master->getMostFractional();
       
@@ -89,7 +89,6 @@ double BranchAndPrice(Data &data){
     }
 
   }
-  
   delete master;
   delete knap;
   for(auto it = tree.begin(); it != tree.end(); ++it){
@@ -110,14 +109,14 @@ int main(int argc, char **argv)
     Data data;
     data.readData(argv[1]);
 
-    std::cout << "Instance: " << argv[1] << "\n";
-    std::cout << "Number of items: " << data.getNItems() << "\n";
+    //std::cout << "Instance: " << argv[1] << "\n";
+    //std::cout << "Number of items: " << data.getNItems() << "\n";
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
     
     double result = BranchAndPrice(data);
-    std::cout << "Result: " << result << "\n";
+    std::cout << "Number of bins used: " << result << "\n";
 
     end = std::chrono::system_clock::now();
 
