@@ -4,6 +4,7 @@
 #include <list>
 #include <chrono>
 #include <numeric>
+#include <fstream>
 
 #include "Master.h"
 #include "Knapsack.h"
@@ -105,7 +106,7 @@ int main(int argc, char **argv)
         printf("Usage:\n./bin instance\n");
         return 0;
     }
-
+    const std::string benchmark_file = "./benchmark.txt";
     Data data;
     data.readData(argv[1]);
 
@@ -123,6 +124,17 @@ int main(int argc, char **argv)
     int elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     std::cout << "Elapsed time (s): " << elapsed_seconds / 1000.0 << "\n\n";
+    
+    std::ofstream benchmark(benchmark_file, std::ios::app); // `std::ios::app` para adicionar ao final do arquivo
+    if (benchmark.is_open())
+    {
+        benchmark << argv[1] << "," << result << "," << elapsed_seconds/1000.0 << "\n";
+        benchmark.close();
+    }
+    else
+    {
+        std::cerr << "Error: Unable to open benchmark file.\n";
+    }
 
     return 0;
 }
