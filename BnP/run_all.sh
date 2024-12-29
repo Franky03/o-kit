@@ -11,7 +11,7 @@ total_instances=$(find instances -type f | wc -l)
 echo "Total de instâncias: ${total_instances}"
 
 # Zerar o arquivo benchmark.txt e adicionar cabeçalho
-echo "instance,bins,time" > ./benchmark.txt
+echo "instance,size,bins,time" > ./benchmark.txt
 
 i=1
 

@@ -128,7 +128,7 @@ int main(int argc, char **argv)
     std::ofstream benchmark(benchmark_file, std::ios::app); // `std::ios::app` para adicionar ao final do arquivo
     if (benchmark.is_open())
     {
-        benchmark << argv[1] << "," << result << "," << elapsed_seconds/1000.0 << "\n";
+        benchmark << argv[1] << "," << data.getNItems() << "," << result << "," << elapsed_seconds/1000.0 << "\n";
         benchmark.close();
     }
     else

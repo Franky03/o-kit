@@ -30,7 +30,7 @@ Master::Master(Data& data){
   model.add(obj);
   model.add(constraints);
 
-  cplex.exportModel("master.lp");
+  //cplex.exportModel("master.lp");
 }
 
 Master::~Master(){

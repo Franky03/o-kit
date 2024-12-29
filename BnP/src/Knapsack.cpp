@@ -30,7 +30,7 @@ Knapsack::Knapsack(Data& data){
   model.add(constraints);
   model.add(var_constraints);
 
-  cplex.exportModel("knapsack.lp");
+  //cplex.exportModel("knapsack.lp");
 
 }
 
